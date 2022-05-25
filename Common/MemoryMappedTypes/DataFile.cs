@@ -24,7 +24,7 @@ public readonly ref struct MapFeatureData
     public GeometryType Type { get; init; }
     public ReadOnlySpan<char> Label { get; init; }
     public ReadOnlySpan<Coordinate> Coordinates { get; init; }
-    public Dictionary<string, string> Properties { get; init; }
+    public Dictionary<PropertyKeys, string> Properties { get; init; }
 }
 
 /// <summary>
@@ -151,9 +151,11 @@ public unsafe class DataFile : IDisposable
         }
 
         var tiles = TiligSystem.GetTilesForBoundingBox(b.MinLat, b.MinLon, b.MaxLat, b.MaxLon);
+        
         for (var i = 0; i < tiles.Length; ++i)
         {
             var header = GetTile(tiles[i]);
+            //Console.WriteLine(header.Tile.Value.FeaturesCount);
             if (header.Tile == null)
             {
                 continue;
@@ -162,6 +164,7 @@ public unsafe class DataFile : IDisposable
             {
                 var feature = GetFeature(j, header.TileOffset);
                 var coordinates = GetCoordinates(header.Tile.Value.CoordinatesOffsetInBytes, feature->CoordinateOffset, feature->CoordinateCount);
+                //Console.WriteLine(feature->PropertyCount + " " + feature->Id);
                 var isFeatureInBBox = false;
 
                 for (var k = 0; k < coordinates.Length; ++k)
@@ -181,13 +184,16 @@ public unsafe class DataFile : IDisposable
 
                 if (isFeatureInBBox)
                 {
-                    var properties = new Dictionary<string, string>(feature->PropertyCount);
+                    var properties = new Dictionary<PropertyKeys, string>(feature->PropertyCount);
                     for (var p = 0; p < feature->PropertyCount; ++p)
                     {
                         GetProperty(header.Tile.Value.StringsOffsetInBytes, header.Tile.Value.CharactersOffsetInBytes, p * 2 + feature->PropertiesOffset, out var key, out var value);
-                        properties.Add(key.ToString(), value.ToString());
+                        //Console.WriteLine(key.ToString() + " " + value.ToString());
+                        var isKnownKey = PropertyManager.getNumber(key.ToString()) != -1;
+                        if (isKnownKey){
+                            properties.Add((PropertyKeys) PropertyManager.getNumber(key.ToString()), value.ToString());
+                        }
                     }
-
                     if (!action(new MapFeatureData
                         {
                             Id = feature->Id,
@@ -204,3 +210,37 @@ public unsafe class DataFile : IDisposable
         }
     }
 }
+
+public class PropertyManager{
+    public static int getNumber(string key){
+        switch(key){
+            case ("highway"):
+                return 0;
+            case ("water"):
+                return 1;
+            case ("railway"):
+                return 2;
+            case ("natural"):
+                return 3;
+            case ("boundary"):
+                return 4;
+            case ("landuse"):
+                return 5;
+            case ("building"):
+                return 6;
+            case ("leisure"):
+                return 7;
+            case ("amenity"):
+                return 8;
+            case ("admin_level"):
+                return 9;
+            case ("place"):
+                return 10;
+            case("name"):
+                return 11;
+            default:
+                return -1;
+        }
+    }
+}
+

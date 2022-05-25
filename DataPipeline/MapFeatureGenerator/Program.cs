@@ -84,12 +84,12 @@ public static class Program
         // Write FileHeader
         fileWriter.Write((long)1); // FileHeader: Version
         fileWriter.Write(mapData.Tiles.Count); // FileHeader: TileCount
-
         // Write TileHeaderEntry
         foreach (var tile in mapData.Tiles)
         {
             fileWriter.Write(tile.Key); // TileHeaderEntry: ID
             fileWriter.Write((long)0); // TileHeaderEntry: OffsetInBytes
+            // Console.WriteLine(tile.Key + " " + tile.Value);
         }
 
         foreach (var (tileId, _) in mapData.Tiles)
