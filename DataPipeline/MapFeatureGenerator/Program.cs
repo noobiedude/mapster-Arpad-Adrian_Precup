@@ -124,7 +124,7 @@ public static class Program
                     {
                         labels[^1] = totalPropertyCount * 2 + featureData.PropertyKeys.keys.Count * 2 + 1;
                     }
-                    Console.WriteLine(tag.Key + " " + tag.Value);
+                    // Console.WriteLine(tag.Key + " " + PropertyManager.getNumber(tag.Key) + " " + tag.Value);
                     featureData.PropertyKeys.keys.Add((PropertyKeys) PropertyManager.getNumber(tag.Key));
                     featureData.PropertyValues.values.Add(tag.Value);
                 }
@@ -138,6 +138,7 @@ public static class Program
                     {
                         if (!featureData.PropertyKeys.keys.Contains((PropertyKeys) PropertyManager.getNumber(key)))
                         {
+                            // Console.WriteLine("Here! " + key);
                             featureData.PropertyKeys.keys.Add((PropertyKeys) PropertyManager.getNumber(key));
                             featureData.PropertyValues.values.Add(value);
                         }
@@ -178,7 +179,7 @@ public static class Program
                     {
                         labels[^1] = totalPropertyCount * 2 + featurePropKeys.Count * 2 + 1;
                     }
-
+                    // Console.WriteLine("In foreach " + tag.Key);
                     featurePropKeys.Add((PropertyKeys) PropertyManager.getNumber(tag.Key));
                     featurePropValues.Add(tag.Value);
                 }
@@ -302,6 +303,7 @@ public static class Program
                 for (var i = 0; i < featureData.PropertyKeys.keys.Count; ++i)
                 {
                     Byte k = (byte) featureData.PropertyKeys.keys[i];
+                    // Console.WriteLine("In ult " + k);
                     foreach (var c in k.ToString())
                     {
                         fileWriter.Write((short)c);

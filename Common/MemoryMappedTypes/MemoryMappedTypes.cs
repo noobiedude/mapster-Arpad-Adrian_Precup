@@ -118,7 +118,8 @@ public enum PropertyKeys : byte{
     Amenity,
     Admin_level,
     Place,
-    Name
+    Name,
+    Waterway
 }
 
 [StructLayout(LayoutKind.Explicit, Pack = 1)]

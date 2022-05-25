@@ -188,8 +188,8 @@ public unsafe class DataFile : IDisposable
                     for (var p = 0; p < feature->PropertyCount; ++p)
                     {
                         GetProperty(header.Tile.Value.StringsOffsetInBytes, header.Tile.Value.CharactersOffsetInBytes, p * 2 + feature->PropertiesOffset, out var key, out var value);
-                        //Console.WriteLine(key.ToString() + " " + value.ToString());
-                        if (int.Parse(key) != 255){
+                        // Console.WriteLine(key.ToString() + " " + value.ToString());
+                        if (byte.Parse(key) != 255){
                             properties.Add((PropertyKeys) int.Parse(key), value.ToString());
                         }
                     }
@@ -237,8 +237,10 @@ public class PropertyManager{
                 return 10;
             case("name"):
                 return 11;
+            case("waterway"):
+                return 12;
             default:
-                return -1;
+                return 255;
         }
     }
 }
