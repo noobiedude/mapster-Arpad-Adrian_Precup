@@ -110,7 +110,7 @@ public static class Program
                 {
                     Id = way.Id,
                     Coordinates = (totalCoordinateCount, new List<Coordinate>()),
-                    PropertyKeys = (totalPropertyCount, new List<string>(way.Tags.Count)),
+                    PropertyKeys = (totalPropertyCount, new List<PropertyKeys>(way.Tags.Count)),
                     PropertyValues = (totalPropertyCount, new List<string>(way.Tags.Count))
                 };
 
@@ -124,7 +124,8 @@ public static class Program
                     {
                         labels[^1] = totalPropertyCount * 2 + featureData.PropertyKeys.keys.Count * 2 + 1;
                     }
-                    featureData.PropertyKeys.keys.Add(tag.Key);
+                    Console.WriteLine(tag.Key + " " + tag.Value);
+                    featureData.PropertyKeys.keys.Add((PropertyKeys) PropertyManager.getNumber(tag.Key));
                     featureData.PropertyValues.values.Add(tag.Value);
                 }
 
@@ -135,9 +136,9 @@ public static class Program
 
                     foreach (var (key, value) in node.Tags)
                     {
-                        if (!featureData.PropertyKeys.keys.Contains(key))
+                        if (!featureData.PropertyKeys.keys.Contains((PropertyKeys) PropertyManager.getNumber(key)))
                         {
-                            featureData.PropertyKeys.keys.Add(key);
+                            featureData.PropertyKeys.keys.Add((PropertyKeys) PropertyManager.getNumber(key));
                             featureData.PropertyValues.values.Add(value);
                         }
                     }
@@ -166,7 +167,7 @@ public static class Program
             {
                 featureIds.Add(nodeId);
 
-                var featurePropKeys = new List<string>();
+                var featurePropKeys = new List<PropertyKeys>();
                 var featurePropValues = new List<string>();
 
                 labels.Add(-1);
@@ -178,7 +179,7 @@ public static class Program
                         labels[^1] = totalPropertyCount * 2 + featurePropKeys.Count * 2 + 1;
                     }
 
-                    featurePropKeys.Add(tag.Key);
+                    featurePropKeys.Add((PropertyKeys) PropertyManager.getNumber(tag.Key));
                     featurePropValues.Add(tag.Value);
                 }
 
@@ -274,12 +275,12 @@ public static class Program
                 var featureData = featuresData[t];
                 for (var i = 0; i < featureData.PropertyKeys.keys.Count; ++i)
                 {
-                    ReadOnlySpan<char> k = featureData.PropertyKeys.keys[i];
+                    Byte k = (byte) featureData.PropertyKeys.keys[i];
                     ReadOnlySpan<char> v = featureData.PropertyValues.values[i];
 
                     fileWriter.Write(stringOffset); // StringEntry: Offset
-                    fileWriter.Write(k.Length); // StringEntry: Length
-                    stringOffset += k.Length;
+                    fileWriter.Write(k.ToString().Length); // StringEntry: Length
+                    stringOffset += k.ToString().Length;
 
                     fileWriter.Write(stringOffset); // StringEntry: Offset
                     fileWriter.Write(v.Length); // StringEntry: Length
@@ -300,8 +301,8 @@ public static class Program
                 var featureData = featuresData[t];
                 for (var i = 0; i < featureData.PropertyKeys.keys.Count; ++i)
                 {
-                    ReadOnlySpan<char> k = featureData.PropertyKeys.keys[i];
-                    foreach (var c in k)
+                    Byte k = (byte) featureData.PropertyKeys.keys[i];
+                    foreach (var c in k.ToString())
                     {
                         fileWriter.Write((short)c);
                     }
@@ -363,7 +364,7 @@ public static class Program
 
         public byte GeometryType { get; set; }
         public (int offset, List<Coordinate> coordinates) Coordinates { get; init; }
-        public (int offset, List<string> keys) PropertyKeys { get; init; }
+        public (int offset, List<PropertyKeys> keys) PropertyKeys { get; init; }
         public (int offset, List<string> values) PropertyValues { get; init; }
     }
 }

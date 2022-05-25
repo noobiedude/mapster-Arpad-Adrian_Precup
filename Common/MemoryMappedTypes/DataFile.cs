@@ -189,9 +189,8 @@ public unsafe class DataFile : IDisposable
                     {
                         GetProperty(header.Tile.Value.StringsOffsetInBytes, header.Tile.Value.CharactersOffsetInBytes, p * 2 + feature->PropertiesOffset, out var key, out var value);
                         //Console.WriteLine(key.ToString() + " " + value.ToString());
-                        var isKnownKey = PropertyManager.getNumber(key.ToString()) != -1;
-                        if (isKnownKey){
-                            properties.Add((PropertyKeys) PropertyManager.getNumber(key.ToString()), value.ToString());
+                        if (int.Parse(key) != 255){
+                            properties.Add((PropertyKeys) int.Parse(key), value.ToString());
                         }
                     }
                     if (!action(new MapFeatureData
